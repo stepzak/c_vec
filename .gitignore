@@ -15,7 +15,7 @@ cmake-build-*/
 .idea/shelf/
 .idea/dictionaries/
 .idea/httpRequests/
-
+build/
 # Compiled files and executables
 *.o
 *.obj
