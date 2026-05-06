@@ -5,6 +5,11 @@
 #include <assert.h>
 
 #define VEC_INIT_CAP 2
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#define VEC_CHECK_TYPE(v, elem) _Static_assert(__builtin_types_compatible_p(typeof(elem), typeof(*(v))), "Type mismatch in vector operation")
+#else
+#define VEC_CHECK_TYPE(v, elem) (void)elem
+#endif
 
 typedef enum {
     CVEC_SUCCESS = 0,
@@ -71,6 +76,7 @@ void vector_remove_impl(void** data, size_t element_size, size_t index);
 
 #define v_push(v, elem) \
     ({ \
+        VEC_CHECK_TYPE(v, elem); \
         VecStatus _status = CVEC_SUCCESS; \
         if (v_len(v) >= v_cap(v)) { \
             _status = vector_grow_impl((void**)&(v), sizeof(*(v))); \

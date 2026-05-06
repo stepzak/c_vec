@@ -5,7 +5,7 @@
 int main() {
     Vec(int) vec = v_from_args(int, -1, -2, -3, -4);
     for (size_t i = 0; i < 10; i++) {
-        VecStatus s = v_push(vec, i);
+        VecStatus s = v_push(vec, (int) i);
         if (s != CVEC_SUCCESS) {
             fprintf(stderr, "Error in v_push()\n");
             return 1;
@@ -15,6 +15,7 @@ int main() {
         printf("%d\n", *it);
     }
     v_pop(vec);
+    v_push(vec, 10);
     printf("Len: %zu\n", v_len(vec));
     printf("%d\n", vec[0]);
     v_free(vec);
