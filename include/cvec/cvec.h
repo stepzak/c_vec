@@ -24,10 +24,12 @@ typedef struct {
 
 #define Vec(T) T*
 
-[[nodiscard]] VecStatus vector_grow_impl(void** data, size_t element_size);
-[[nodiscard]] VecStatus vector_reserve_impl(void** data, size_t element_size, size_t capacity);
+[[nodiscard]] VecStatus vector_grow_impl(void** data, size_t element_size, size_t prefix);
+[[nodiscard]] VecStatus vector_reserve_impl(void** data, size_t element_size, size_t capacity, size_t prefix);
 VecStatus vector_shrink_impl(void** data, size_t element_size);
 void vector_remove_impl(void** data, size_t element_size, size_t index);
+void* v_alloc_with_prefix(size_t prefix_size, size_t item_size, size_t initial_cap);
+VecStatus v_push_raw(void** data, void* el, size_t el_size, size_t prefix);
 
 #define v_header(v) ((VecHeader *)(v) - 1)
 #define v_len(v) ((v) ? v_header(v)->length : 0)
@@ -35,7 +37,7 @@ void vector_remove_impl(void** data, size_t element_size, size_t index);
 
 #endif
 
-#define v_reserve(v, cap) ({ vector_reserve_impl((void**)&(v), sizeof(*(v)), cap); })
+#define v_reserve(v, cap) ({ vector_reserve_impl((void**)&(v), sizeof(*(v)), cap, 0); })
 
 #define v_from_args(type, ...) \
     ({ \
@@ -79,7 +81,7 @@ void vector_remove_impl(void** data, size_t element_size, size_t index);
         VEC_CHECK_TYPE(v, elem); \
         VecStatus _status = CVEC_SUCCESS; \
         if (v_len(v) >= v_cap(v)) { \
-            _status = vector_grow_impl((void**)&(v), sizeof(*(v))); \
+            _status = vector_grow_impl((void**)&(v), sizeof(*(v)), 0); \
         } \
         if (_status == CVEC_SUCCESS) (v)[v_header(v)->length++] = (elem); \
         \
